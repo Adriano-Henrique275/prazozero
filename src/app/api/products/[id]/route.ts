@@ -1,14 +1,59 @@
 import { prisma } from '@/lib/prisma'
 import { productSchema } from '@/lib/validators/product'
 import { Prisma } from '@prisma/client'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-// Deletar produto por ID
-export async function DELETE(
-  _request: Request,
-  { params }: { params: { id: string } },
+// 🔄 Atualizar produto por ID
+export async function PUT(
+  request: NextRequest,
+  context: { params: { id: string } },
 ) {
-  if (!params?.id) {
+  const { id } = context.params
+
+  if (!id) {
+    return NextResponse.json(
+      { error: 'ID do produto não fornecido.' },
+      { status: 400 },
+    )
+  }
+
+  try {
+    const body = await request.json()
+    const data = productSchema.partial().parse(body)
+
+    const updatedProduct = await prisma.product.update({
+      where: { id },
+      data,
+    })
+
+    return NextResponse.json(updatedProduct)
+  } catch (err) {
+    if (
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === 'P2025'
+    ) {
+      return NextResponse.json(
+        { error: 'Produto não encontrado para atualização.' },
+        { status: 404 },
+      )
+    }
+
+    console.error('Erro ao atualizar produto:', err)
+    return NextResponse.json(
+      { error: 'Erro interno ao atualizar produto.' },
+      { status: 500 },
+    )
+  }
+}
+
+// ❌ Deletar produto por ID
+export async function DELETE(
+  _request: NextRequest,
+  context: { params: { id: string } },
+) {
+  const { id } = context.params
+
+  if (!id) {
     return NextResponse.json(
       { error: 'ID do produto não fornecido.' },
       { status: 400 },
@@ -17,7 +62,7 @@ export async function DELETE(
 
   try {
     await prisma.product.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return NextResponse.json(
@@ -43,58 +88,20 @@ export async function DELETE(
   }
 }
 
-// Atualizar produto por ID
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } },
-) {
-  if (!params?.id) {
-    return NextResponse.json(
-      { error: 'ID do produto não fornecido.' },
-      { status: 400 },
-    )
-  }
-
-  try {
-    const body = await request.json()
-    const data = productSchema.partial().parse(body)
-
-    const updatedProduct = await prisma.product.update({
-      where: { id: params.id },
-      data,
-    })
-
-    return NextResponse.json(updatedProduct)
-  } catch (err) {
-    if (
-      err instanceof Prisma.PrismaClientKnownRequestError &&
-      err.code === 'P2025'
-    ) {
-      return NextResponse.json(
-        { error: 'Produto não encontrado para atualização.' },
-        { status: 404 },
-      )
-    }
-
-    console.error('Erro ao atualizar produto:', err)
-    return NextResponse.json(
-      { error: 'Erro interno ao atualizar produto.' },
-      { status: 500 },
-    )
-  }
-}
-
+// 📦 Buscar produto por ID
 export async function GET(
-  _request: Request,
-  { params }: { params: { id: string } },
+  _request: NextRequest,
+  context: { params: { id: string } },
 ) {
-  if (!params?.id) {
+  const { id } = context.params
+
+  if (!id) {
     return NextResponse.json({ error: 'ID não fornecido.' }, { status: 400 })
   }
 
   try {
     const produto = await prisma.product.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!produto) {

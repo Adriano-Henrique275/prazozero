@@ -15,15 +15,17 @@ export const Dashboard = () => {
       const data = await res.json()
       setProducts(data)
     }
+
     fetchProducts()
   }, [])
 
-  const expiringSoon = products.filter((p) => {
-    const days = Math.ceil(
-      (new Date(p.expiresAt).getTime() - new Date().getTime()) /
-        (1000 * 60 * 60 * 24),
+  const expiringSoon = products.filter((product) => {
+    const today = Date.now()
+    const expiration = new Date(product.expiresAt).getTime()
+    const daysUntilExpire = Math.ceil(
+      (expiration - today) / (1000 * 60 * 60 * 24),
     )
-    return days <= 7
+    return daysUntilExpire <= 7
   })
 
   return (
@@ -44,8 +46,10 @@ export const Dashboard = () => {
             {expiringSoon.slice(0, 3).map((prod) => (
               <ProductCard
                 key={prod.id}
+                id={prod.id}
                 name={prod.name}
                 expiresAt={prod.expiresAt.toString()}
+                category={prod.category ?? undefined}
               />
             ))}
           </div>
