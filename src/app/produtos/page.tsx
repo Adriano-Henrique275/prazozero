@@ -6,8 +6,9 @@ import { toast } from 'react-hot-toast'
 
 import { ProductCard } from '@/components/Product/ProductCard'
 import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
 import { toastConfirm } from '@/lib/toastConfirm'
+
+import { FiBox, FiCalendar, FiClock, FiPlus, FiSearch } from 'react-icons/fi'
 
 type Product = {
   id: string
@@ -30,12 +31,11 @@ export default function ProdutosPage() {
 
   const fetchProducts = useCallback(async () => {
     try {
-      const params = new URLSearchParams({
-        name: search,
-        minDate,
-        page: page.toString(),
-        limit: limit.toString(),
-      })
+      const params = new URLSearchParams()
+      if (search) params.set('name', search)
+      if (minDate) params.set('minDate', minDate)
+      params.set('page', page.toString())
+      params.set('limit', limit.toString())
 
       const res = await fetch(`/api/products/search?${params}`)
       const { data, total } = await res.json()
@@ -54,7 +54,7 @@ export default function ProdutosPage() {
   useEffect(() => {
     if (products.length > 0 && vencemHoje.length > 0) {
       toast(
-        `⏰ ${vencemHoje.length} produto${
+        `${vencemHoje.length} produto${
           vencemHoje.length > 1 ? 's' : ''
         } vence hoje!`,
         {
@@ -94,49 +94,58 @@ export default function ProdutosPage() {
   return (
     <main className="max-w-6xl mx-auto px-4 py-10 space-y-8">
       <div className="flex flex-wrap justify-between items-center gap-4">
-        <h1 className="text-2xl font-bold text-zinc-100">
-          📦 Produtos Cadastrados
+        <h1 className="text-2xl font-bold text-zinc-100 flex items-center gap-2">
+          <FiBox className="w-5 h-5" />
+          Produtos Cadastrados
         </h1>
         <Link href="/cadastrar">
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded py-1 px-2">
-            ➕ Novo Produto
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded py-1 px-2 flex items-center gap-2 transition-colors hover:opacity-90 cursor-pointer">
+            <FiPlus className="w-4 h-4" />
+            Novo Produto
           </Button>
         </Link>
       </div>
 
       <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm text-zinc-300 mb-1">
-            🔍 Buscar por nome
+          <label className="flex items-center gap-2 text-sm font-medium text-zinc-300 mb-2">
+            <FiSearch className="w-4 h-4" />
+            Buscar por nome
           </label>
-          <Input
+
+          <input
+            type="text"
             placeholder="Ex: Café, Leite..."
             value={search}
             onChange={(e) => {
               setPage(1)
               setSearch(e.target.value)
             }}
+            className="w-full bg-zinc-950 border border-zinc-700 text-zinc-100 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
           />
         </div>
         <div>
-          <label className="block text-sm text-zinc-300 mb-1">
-            📅 Validade a partir de
+          <label className="flex items-center gap-2 text-sm font-medium text-zinc-300 mb-2">
+            <FiCalendar className="w-4 h-4" />
+            Validade a partir de
           </label>
-          <Input
+          <input
             type="date"
             value={minDate}
             onChange={(e) => {
               setPage(1)
               setMinDate(e.target.value)
             }}
+            className="w-full bg-zinc-950 border border-zinc-700 text-zinc-100 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition appearance-none cursor-pointer"
           />
         </div>
       </section>
 
       {vencemHoje.length > 0 && (
-        <div className="bg-yellow-400/10 border border-yellow-500 text-yellow-300 px-4 py-3 rounded text-sm font-medium">
-          ⏰ {vencemHoje.length} produto{vencemHoje.length > 1 ? 's' : ''} vence
-          hoje!
+        <div className="bg-yellow-400/10 border border-yellow-500 text-yellow-300 px-4 py-3 rounded text-sm font-medium flex items-center gap-2">
+          <FiClock className="w-4 h-4" />
+          {vencemHoje.length} produto
+          {vencemHoje.length > 1 ? 's' : ''} vence hoje!
         </div>
       )}
 
@@ -165,7 +174,7 @@ export default function ProdutosPage() {
           <Button
             onClick={() => setPage((p) => Math.max(p - 1, 1))}
             disabled={page === 1}
-            className="bg-zinc-800 text-zinc-200 hover:bg-zinc-700"
+            className="bg-zinc-800 text-zinc-200 hover:bg-zinc-700 transition-colors hover:opacity-90 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           >
             ← Anterior
           </Button>
@@ -175,7 +184,7 @@ export default function ProdutosPage() {
           <Button
             onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
             disabled={page === totalPages}
-            className="bg-zinc-800 text-zinc-200 hover:bg-zinc-700"
+            className="bg-zinc-800 text-zinc-200 hover:bg-zinc-700 transition-colors hover:opacity-90 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Próxima →
           </Button>

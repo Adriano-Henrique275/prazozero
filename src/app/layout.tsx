@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Roboto } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
+import { OneSignalProvider } from '../components/OnSignalProvider'
 import './globals.css'
 
 const roboto = Roboto({
@@ -25,6 +26,8 @@ export default function RootLayout({
       <body
         className={`${roboto.variable} font-sans bg-zinc-950 text-zinc-100 antialiased min-h-screen`}
       >
+        <OneSignalProvider />
+
         <Toaster
           position="top-center"
           toastOptions={{
@@ -35,6 +38,7 @@ export default function RootLayout({
             },
           }}
         />
+
         {children}
       </body>
     </html>

@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/Button'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { FiEdit, FiTag, FiTrash2 } from 'react-icons/fi'
 
 type ProductCardProps = {
   id: string
@@ -67,25 +68,30 @@ export const ProductCard = ({
       </p>
 
       {category && (
-        <p className="text-xs text-zinc-500 italic">Categoria: {category}</p>
+        <p className="text-xs text-zinc-500 italic flex items-center gap-1">
+          <FiTag className="w-4 h-4" />
+          {category}
+        </p>
       )}
 
       <div className="mt-3 flex gap-2">
         <Button
           variant="outline"
           type="button"
-          className="text-sm"
+          className="text-sm flex items-center gap-1 transition-colors hover:opacity-90 cursor-pointer"
           onClick={() => onEdit?.(id)}
         >
-          ✏️ Editar
+          <FiEdit className="w-4 h-4" />
+          Editar
         </Button>
         <Button
           variant="secondary"
           type="button"
-          className="text-sm"
+          className="text-sm flex items-center gap-1 transition-colors hover:opacity-90 cursor-pointer"
           onClick={() => onDelete?.(id)}
         >
-          🗑️ Deletar
+          <FiTrash2 className="w-4 h-4" />
+          Deletar
         </Button>
       </div>
     </div>

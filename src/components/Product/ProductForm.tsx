@@ -1,13 +1,22 @@
 'use client'
 
-import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
-import { Label } from '@/components/ui/Label'
-import { ProductInput, productSchema } from '@/lib/validators/product'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
+
+import { Button } from '@/components/ui/Button'
+import { Label } from '@/components/ui/Label'
+import { ProductInput, productSchema } from '@/lib/validators/product'
+
+import {
+  FiCalendar,
+  FiClipboard,
+  FiHash,
+  FiPackage,
+  FiSend,
+  FiTag,
+} from 'react-icons/fi'
 
 export const ProductForm = () => {
   const {
@@ -34,7 +43,7 @@ export const ProductForm = () => {
 
     try {
       const res = await promise
-      if (!res.ok) throw new Error('Erro ao salvar')
+      if (!res.ok) throw new Error()
       reset()
     } catch (err) {
       console.error(err)
@@ -43,43 +52,100 @@ export const ProductForm = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-md">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-6 max-w-md w-full"
+    >
       <div>
-        <Label htmlFor="name">Nome do Produto</Label>
-        <Input id="name" {...register('name')} />
+        <Label
+          htmlFor="name"
+          className="flex items-center gap-2 mb-2 text-sm text-zinc-300"
+        >
+          <FiPackage className="w-4 h-4" />
+          Nome do Produto
+        </Label>
+        <input
+          id="name"
+          {...register('name')}
+          className="w-full bg-zinc-950 border border-zinc-700 text-zinc-100 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
+        />
         {errors.name && (
-          <p className="text-red-500 text-xs">{errors.name.message}</p>
+          <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
         )}
       </div>
 
       <div>
-        <Label htmlFor="expiresAt">Data de Vencimento</Label>
-        <Input id="expiresAt" type="date" {...register('expiresAt')} />
+        <Label
+          htmlFor="expiresAt"
+          className="flex items-center gap-2 mb-2 text-sm text-zinc-300"
+        >
+          <FiCalendar className="w-4 h-4" />
+          Data de Vencimento
+        </Label>
+        <input
+          id="expiresAt"
+          type="date"
+          {...register('expiresAt')}
+          className="w-full bg-zinc-950 border border-zinc-700 text-zinc-100 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition appearance-none"
+        />
         {errors.expiresAt && (
-          <p className="text-red-500 text-xs">{errors.expiresAt.message}</p>
+          <p className="text-red-500 text-xs mt-1">
+            {errors.expiresAt.message}
+          </p>
         )}
       </div>
 
       <div>
-        <Label htmlFor="quantity">Quantidade</Label>
-        <Input id="quantity" type="number" {...register('quantity')} />
+        <Label
+          htmlFor="quantity"
+          className="flex items-center gap-2 mb-2 text-sm text-zinc-300"
+        >
+          <FiHash className="w-4 h-4" />
+          Quantidade
+        </Label>
+        <input
+          id="quantity"
+          type="number"
+          {...register('quantity')}
+          className="w-full bg-zinc-950 border border-zinc-700 text-zinc-100 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
+        />
         {errors.quantity && (
-          <p className="text-red-500 text-xs">{errors.quantity.message}</p>
+          <p className="text-red-500 text-xs mt-1">{errors.quantity.message}</p>
         )}
       </div>
 
       <div>
-        <Label htmlFor="category">Categoria</Label>
-        <Input id="category" {...register('category')} />
+        <Label
+          htmlFor="category"
+          className="flex items-center gap-2 mb-2 text-sm text-zinc-300"
+        >
+          <FiTag className="w-4 h-4" />
+          Categoria
+        </Label>
+        <input
+          id="category"
+          {...register('category')}
+          className="w-full bg-zinc-950 border border-zinc-700 text-zinc-100 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
+        />
       </div>
 
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mt-6">
-        <Button type="submit" disabled={isSubmitting}>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between pt-6">
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="flex items-center gap-2 transition-colors hover:opacity-90 cursor-pointer"
+        >
+          <FiSend className="w-4 h-4" />
           {isSubmitting ? 'Cadastrando...' : 'Cadastrar Produto'}
         </Button>
 
         <Link href="/produtos">
-          <Button variant="outline" type="button">
+          <Button
+            variant="outline"
+            type="button"
+            className="flex items-center gap-2 transition-colors hover:opacity-90 cursor-pointer"
+          >
+            <FiClipboard className="w-4 h-4" />
             Ver todos os produtos
           </Button>
         </Link>
