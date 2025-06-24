@@ -10,7 +10,10 @@ type Context = {
 }
 
 // 📦 Buscar produto por ID
-export async function GET(_request: NextRequest, context: Context) {
+export async function GET(
+  _request: NextRequest,
+  context: { params: Record<string, string> },
+) {
   const { id } = context.params
 
   try {
