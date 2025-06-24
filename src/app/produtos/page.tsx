@@ -76,7 +76,7 @@ export default function ProdutosPage() {
           📦 Produtos Cadastrados
         </h1>
         <Link href="/cadastrar">
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded py-1 px-2">
             ➕ Novo Produto
           </Button>
         </Link>
