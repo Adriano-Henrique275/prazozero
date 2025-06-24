@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 
 import { ProductCard } from '@/components/Product/ProductCard'
@@ -13,7 +13,7 @@ type Product = {
   id: string
   name: string
   expiresAt: string
-  category?: string
+  category?: string | null
 }
 
 export default function ProdutosPage() {
@@ -28,7 +28,7 @@ export default function ProdutosPage() {
   const vencemHoje = products.filter((p) => p.expiresAt.startsWith(hojeISO))
   const totalPages = Math.ceil(total / limit)
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       const params = new URLSearchParams({
         name: search,
@@ -45,11 +45,11 @@ export default function ProdutosPage() {
     } catch {
       toast.error('Erro ao carregar produtos!')
     }
-  }
+  }, [search, minDate, page, limit])
 
   useEffect(() => {
     fetchProducts()
-  }, [search, minDate, page])
+  }, [fetchProducts])
 
   useEffect(() => {
     if (products.length > 0 && vencemHoje.length > 0) {
@@ -67,17 +67,14 @@ export default function ProdutosPage() {
         },
       )
     }
-  }, [products])
+  }, [products, vencemHoje.length])
 
   const handleDelete = async (id: string) => {
     toastConfirm({
       message: 'Deseja realmente deletar este produto?',
       onConfirm: async () => {
         try {
-          const res = await fetch(`/api/products/${id}`, {
-            method: 'DELETE',
-          })
-
+          const res = await fetch(`/api/products/${id}`, { method: 'DELETE' })
           if (!res.ok) throw new Error()
 
           toast.success('Produto removido com sucesso!')
@@ -151,7 +148,7 @@ export default function ProdutosPage() {
               id={p.id}
               name={p.name}
               expiresAt={p.expiresAt}
-              category={p.category}
+              category={p.category ?? undefined}
               onDelete={handleDelete}
               onEdit={handleEdit}
             />
