@@ -10,11 +10,9 @@ type Context = {
 }
 
 // 📦 Buscar produto por ID
-export async function GET(
-  _request: NextRequest,
-  context: { params: Record<string, string> },
-) {
-  const { id } = context.params
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function GET(req: NextRequest, context: any) {
+  const id = context?.params?.id
 
   try {
     const produto = await prisma.product.findUnique({
