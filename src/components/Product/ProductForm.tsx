@@ -56,6 +56,7 @@ export const ProductForm = () => {
       onSubmit={handleSubmit(onSubmit)}
       className="space-y-6 max-w-md w-full"
     >
+      {/* Nome */}
       <div>
         <Label
           htmlFor="name"
@@ -74,6 +75,7 @@ export const ProductForm = () => {
         )}
       </div>
 
+      {/* Data de Vencimento */}
       <div>
         <Label
           htmlFor="expiresAt"
@@ -95,6 +97,7 @@ export const ProductForm = () => {
         )}
       </div>
 
+      {/* Quantidade */}
       <div>
         <Label
           htmlFor="quantity"
@@ -114,6 +117,7 @@ export const ProductForm = () => {
         )}
       </div>
 
+      {/* Categoria */}
       <div>
         <Label
           htmlFor="category"
@@ -129,21 +133,22 @@ export const ProductForm = () => {
         />
       </div>
 
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between pt-6">
+      {/* Botões responsivos */}
+      <div className="flex flex-col sm:flex-row gap-2 pt-6">
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="flex items-center justify-center gap-2 px-4 py-2 text-sm transition-colors hover:opacity-90 cursor-pointer"
+          className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 text-sm transition-colors hover:opacity-90 cursor-pointer"
         >
           <FiSend className="w-4 h-4" />
           {isSubmitting ? 'Cadastrando...' : 'Cadastrar Produto'}
         </Button>
 
-        <Link href="/produtos">
+        <Link href="/produtos" className="w-full sm:w-auto">
           <Button
             variant="outline"
             type="button"
-            className="flex items-center justify-center gap-2 px-4 py-2 text-sm transition-colors hover:opacity-90 cursor-pointer"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 text-sm transition-colors hover:opacity-90 cursor-pointer"
           >
             <FiClipboard className="w-4 h-4" />
             Ver todos os produtos
