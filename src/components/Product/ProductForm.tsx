@@ -59,7 +59,7 @@ export const ProductForm = () => {
       <div>
         <Label
           htmlFor="name"
-          className="flex items-center gap-2 mb-2 text-sm text-zinc-300"
+          className="flex items-center gap-2 text-sm font-medium text-zinc-300 mb-2"
         >
           <FiPackage className="w-4 h-4" />
           Nome do Produto
@@ -67,7 +67,7 @@ export const ProductForm = () => {
         <input
           id="name"
           {...register('name')}
-          className="w-full bg-zinc-950 border border-zinc-700 text-zinc-100 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
+          className="w-full bg-zinc-950 border border-zinc-600 text-zinc-100 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
         />
         {errors.name && (
           <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
@@ -77,7 +77,7 @@ export const ProductForm = () => {
       <div>
         <Label
           htmlFor="expiresAt"
-          className="flex items-center gap-2 mb-2 text-sm text-zinc-300"
+          className="flex items-center gap-2 text-sm font-medium text-zinc-300 mb-2"
         >
           <FiCalendar className="w-4 h-4" />
           Data de Vencimento
@@ -86,7 +86,7 @@ export const ProductForm = () => {
           id="expiresAt"
           type="date"
           {...register('expiresAt')}
-          className="w-full bg-zinc-950 border border-zinc-700 text-zinc-100 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition appearance-none"
+          className="w-full bg-zinc-950 border border-zinc-600 text-zinc-100 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition appearance-none cursor-pointer"
         />
         {errors.expiresAt && (
           <p className="text-red-500 text-xs mt-1">
@@ -98,7 +98,7 @@ export const ProductForm = () => {
       <div>
         <Label
           htmlFor="quantity"
-          className="flex items-center gap-2 mb-2 text-sm text-zinc-300"
+          className="flex items-center gap-2 text-sm font-medium text-zinc-300 mb-2"
         >
           <FiHash className="w-4 h-4" />
           Quantidade
@@ -107,7 +107,7 @@ export const ProductForm = () => {
           id="quantity"
           type="number"
           {...register('quantity')}
-          className="w-full bg-zinc-950 border border-zinc-700 text-zinc-100 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
+          className="w-full bg-zinc-950 border border-zinc-600 text-zinc-100 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
         />
         {errors.quantity && (
           <p className="text-red-500 text-xs mt-1">{errors.quantity.message}</p>
@@ -117,7 +117,7 @@ export const ProductForm = () => {
       <div>
         <Label
           htmlFor="category"
-          className="flex items-center gap-2 mb-2 text-sm text-zinc-300"
+          className="flex items-center gap-2 text-sm font-medium text-zinc-300 mb-2"
         >
           <FiTag className="w-4 h-4" />
           Categoria
@@ -125,7 +125,7 @@ export const ProductForm = () => {
         <input
           id="category"
           {...register('category')}
-          className="w-full bg-zinc-950 border border-zinc-700 text-zinc-100 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
+          className="w-full bg-zinc-950 border border-zinc-600 text-zinc-100 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
         />
       </div>
 
@@ -133,7 +133,7 @@ export const ProductForm = () => {
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="flex items-center gap-2 transition-colors hover:opacity-90 cursor-pointer"
+          className="flex items-center justify-center gap-2 px-4 py-2 text-sm transition-colors hover:opacity-90 cursor-pointer"
         >
           <FiSend className="w-4 h-4" />
           {isSubmitting ? 'Cadastrando...' : 'Cadastrar Produto'}
@@ -143,7 +143,7 @@ export const ProductForm = () => {
           <Button
             variant="outline"
             type="button"
-            className="flex items-center gap-2 transition-colors hover:opacity-90 cursor-pointer"
+            className="flex items-center justify-center gap-2 px-4 py-2 text-sm transition-colors hover:opacity-90 cursor-pointer"
           >
             <FiClipboard className="w-4 h-4" />
             Ver todos os produtos

@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📦 Controle de Produtos
 
-## Getting Started
+Aplicação web moderna e responsiva para cadastro, listagem e gerenciamento de produtos com controle de validade.
+Vercel
+Next.js Tailwind CSS
 
-First, run the development server:
+## ✨ Funcionalidades
 
-```bash
+- ✅ Cadastro de produtos com validação e feedback visual
+- ✅ Visualização em cards com status de validade (Ok, Vencendo, Vencido)
+- ✅ Busca por nome e filtro por data de vencimento
+- ✅ Toasts de alerta para vencimentos do dia
+- ✅ Edição e exclusão com confirmação customizada
+- ✅ Paginação e UX refinada com animações suaves
+- ✅ Deploy automático via Vercel e favicon personalizado
+
+## ⚙️ Tecnologias e libs
+
+- Next.js 14 App Router
+- React Hook Form + Zod
+- Tailwind CSS + Dark Theme
+- React Icons
+- Prisma ORM + PostgreSQL
+- Vercel Hosting
+- date-fns para formatação de datas
+- react-hot-toast para notificações
+- Deploy e CI/CD via GitHub + Vercel
+
+## 🧪 Como rodar local
+
+git clone [Github]("https://github.com/Adriano-Henrique275/prazozero")
+cd prazozero
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Certifique-se de ter o Node.js e o NPM instalados
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+📁 Organização
+├── app/
+│ ├── page.tsx
+│ └── produtos/...
+├── components/
+│ ├── ui/ (Botões, Inputs, Labels...)
+│ └── ProductCard.tsx
+├── lib/
+│ ├── prisma.ts
+│ └── validators/
+├── public/
+│ └── favicon.ico
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 Deploy
 
-## Learn More
+Aplicação publicada na Vercel com ambiente de produção automatizado via vercel --prod.
 
-To learn more about Next.js, take a look at the following resources:
+### 🧠 Autor
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Feito com ♥ por Adriano Henrique.
+Se curtiu esse projeto, não esquece de deixar uma ⭐ no repositório!
