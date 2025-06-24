@@ -29,7 +29,7 @@ export const Dashboard = () => {
   return (
     <div className="max-w-3xl mx-auto w-full space-y-6 px-4 py-10">
       <header className="space-y-1">
-        <h1 className="text-3xl font-bold text-gray-900">PrazoZero 🚀</h1>
+        <h1 className="text-3xl font-bold text-zinc-200">PrazoZero 🚀</h1>
         <p className="text-sm text-gray-600">
           Acompanhe seus produtos antes que expirem!
         </p>
