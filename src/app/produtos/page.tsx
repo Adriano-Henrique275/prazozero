@@ -7,6 +7,7 @@ import { toast } from 'react-hot-toast'
 import { ProductCard } from '@/components/Product/ProductCard'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { toastConfirm } from '@/lib/toastConfirm'
 
 type Product = {
   id: string
@@ -48,7 +49,6 @@ export default function ProdutosPage() {
 
   useEffect(() => {
     fetchProducts()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, minDate, page])
 
   useEffect(() => {
@@ -68,6 +68,31 @@ export default function ProdutosPage() {
       )
     }
   }, [products])
+
+  const handleDelete = async (id: string) => {
+    toastConfirm({
+      message: 'Deseja realmente deletar este produto?',
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`/api/products/${id}`, {
+            method: 'DELETE',
+          })
+
+          if (!res.ok) throw new Error()
+
+          toast.success('Produto removido com sucesso!')
+          fetchProducts()
+        } catch (erro) {
+          toast.error('Erro ao deletar produto 😢')
+          console.error(erro)
+        }
+      },
+    })
+  }
+
+  const handleEdit = (id: string) => {
+    window.location.href = `/editar/${id}`
+  }
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-10 space-y-8">
@@ -123,9 +148,12 @@ export default function ProdutosPage() {
           products.map((p) => (
             <ProductCard
               key={p.id}
+              id={p.id}
               name={p.name}
               expiresAt={p.expiresAt}
               category={p.category}
+              onDelete={handleDelete}
+              onEdit={handleEdit}
             />
           ))
         ) : (

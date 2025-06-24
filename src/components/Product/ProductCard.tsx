@@ -1,16 +1,23 @@
+import { Button } from '@/components/ui/Button'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
 type ProductCardProps = {
+  id: string
   name: string
   expiresAt: string
   category?: string
+  onDelete?: (id: string) => void
+  onEdit?: (id: string) => void
 }
 
 export const ProductCard = ({
+  id,
   name,
   expiresAt,
   category,
+  onDelete,
+  onEdit,
 }: ProductCardProps) => {
   const formattedDate = format(new Date(expiresAt), "dd 'de' MMMM 'de' yyyy", {
     locale: ptBR,
@@ -56,6 +63,25 @@ export const ProductCard = ({
       {category && (
         <p className="text-xs text-zinc-500 italic">Categoria: {category}</p>
       )}
+
+      <div className="mt-3 flex gap-2">
+        <Button
+          variant="outline"
+          type="button"
+          onClick={() => onEdit?.(id)}
+          className="text-sm"
+        >
+          ✏️ Editar
+        </Button>
+        <Button
+          variant="secondary"
+          type="button"
+          onClick={() => onDelete?.(id)}
+          className="text-sm"
+        >
+          🗑️ Deletar
+        </Button>
+      </div>
     </div>
   )
 }

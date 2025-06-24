@@ -73,13 +73,17 @@ export const ProductForm = () => {
         <Input id="category" {...register('category')} />
       </div>
 
-      <Button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? 'Cadastrando...' : 'Cadastrar Produto'}
-      </Button>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mt-6">
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Cadastrando...' : 'Cadastrar Produto'}
+        </Button>
 
-      <Link href="/produtos">
-        <Button className="mt-4">Ver todos os produtos</Button>
-      </Link>
+        <Link href="/produtos">
+          <Button variant="outline" type="button">
+            Ver todos os produtos
+          </Button>
+        </Link>
+      </div>
     </form>
   )
 }
