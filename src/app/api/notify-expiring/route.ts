@@ -32,7 +32,7 @@ export async function GET() {
     } vence hoje:\n\n${vencendoHoje.map((p) => `• ${p.name}`).join('\n')}`
 
     const response = await fetch(
-      `https://api.z-api.io/${instance}/${token}/send-message`,
+      `https://api.z-api.io/instances/${instance}/token/${token}/send-message`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
