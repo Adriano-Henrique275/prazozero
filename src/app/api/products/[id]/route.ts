@@ -3,12 +3,6 @@ import { productSchema } from '@/lib/validators/product'
 import { Prisma } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 
-type Context = {
-  params: {
-    id: string
-  }
-}
-
 // 📦 Buscar produto por ID
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function GET(req: NextRequest, context: any) {
@@ -37,8 +31,9 @@ export async function GET(req: NextRequest, context: any) {
 }
 
 // 🔄 Atualizar produto por ID
-export async function PUT(request: NextRequest, context: Context) {
-  const { id } = context.params
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function PUT(request: NextRequest, context: any) {
+  const id = context?.params?.id
 
   try {
     const body = await request.json()
@@ -70,8 +65,9 @@ export async function PUT(request: NextRequest, context: Context) {
 }
 
 // ❌ Deletar produto por ID
-export async function DELETE(_request: NextRequest, context: Context) {
-  const { id } = context.params
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function DELETE(_request: NextRequest, context: any) {
+  const id = context?.params?.id
 
   try {
     await prisma.product.delete({
