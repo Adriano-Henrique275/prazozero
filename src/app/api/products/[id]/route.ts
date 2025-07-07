@@ -5,17 +5,16 @@ import { Prisma } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 
 // 🧾 GET /api/products/[id]
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: { id: string } },
-) {
-  if (!params?.id) {
+export async function GET(request: NextRequest) {
+  const id = request.nextUrl.pathname.split('/').pop()
+
+  if (!id) {
     return NextResponse.json({ error: 'ID inválido.' }, { status: 400 })
   }
 
   try {
     const produto = await prisma.product.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!produto) {
@@ -39,20 +38,19 @@ export async function GET(
 }
 
 // ✏️ PUT /api/products/[id]
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } },
-) {
-  if (!params?.id) {
+export async function PUT(request: NextRequest) {
+  const id = request.nextUrl.pathname.split('/').pop()
+
+  if (!id) {
     return NextResponse.json({ error: 'ID inválido.' }, { status: 400 })
   }
 
   try {
-    const body = await req.json()
+    const body = await request.json()
     const data = productUpdateSchema.parse(body)
 
     const updated = await prisma.product.update({
-      where: { id: params.id },
+      where: { id },
       data,
     })
 
@@ -80,17 +78,16 @@ export async function PUT(
 }
 
 // 🗑️ DELETE /api/products/[id]
-export async function DELETE(
-  _req: NextRequest,
-  { params }: { params: { id: string } },
-) {
-  if (!params?.id) {
+export async function DELETE(request: NextRequest) {
+  const id = request.nextUrl.pathname.split('/').pop()
+
+  if (!id) {
     return NextResponse.json({ error: 'ID inválido.' }, { status: 400 })
   }
 
   try {
     const removed = await prisma.product.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         status: 'REMOVIDO',
         removedAt: new Date(),
