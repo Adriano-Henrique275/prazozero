@@ -2,37 +2,37 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
-import { useForm } from 'react-hook-form'
+import { useForm, type SubmitHandler } from 'react-hook-form'
 import toast from 'react-hot-toast'
+import { z } from 'zod'
+
+import { FiClipboard, FiHash, FiPackage, FiSend, FiTag } from 'react-icons/fi'
 
 import { Button } from '@/components/ui/Button'
+import { DatePickerField } from '@/components/ui/DatePickerField'
+import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
-import { ProductInput, productSchema } from '@/lib/validators/product'
 
-import {
-  FiCalendar,
-  FiClipboard,
-  FiHash,
-  FiPackage,
-  FiSend,
-  FiTag,
-} from 'react-icons/fi'
+import { productSchema } from '@/lib/validators/product'
+
+type ProductFormInput = z.input<typeof productSchema>
 
 export const ProductForm = () => {
   const {
     register,
     reset,
+    control,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<ProductInput>({
+  } = useForm<ProductFormInput>({
     resolver: zodResolver(productSchema),
   })
 
-  const onSubmit = async (data: ProductInput) => {
+  const onSubmit: SubmitHandler<ProductFormInput> = async (data) => {
     const promise = fetch('/api/products', {
       method: 'POST',
-      body: JSON.stringify(data),
       headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
     })
 
     toast.promise(promise, {
@@ -43,7 +43,10 @@ export const ProductForm = () => {
 
     try {
       const res = await promise
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const msg = await res.text()
+        throw new Error(`Erro da API: ${res.status} - ${msg}`)
+      }
       reset()
     } catch (err) {
       console.error(err)
@@ -53,65 +56,52 @@ export const ProductForm = () => {
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onSubmit, () => {
+        toast.error('Preencha todos os campos obrigatórios corretamente 🚨')
+      })}
       className="space-y-6 max-w-md w-full"
     >
       {/* Nome */}
       <div>
         <Label
           htmlFor="name"
-          className="flex items-center gap-2 text-sm font-medium text-zinc-300 mb-2"
+          className="flex items-center gap-2 mb-2 text-sm font-medium text-zinc-300"
         >
           <FiPackage className="w-4 h-4" />
           Nome do Produto
         </Label>
-        <input
-          id="name"
-          {...register('name')}
-          className="w-full bg-zinc-950 border border-zinc-600 text-zinc-100 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
-        />
+        <Input id="name" {...register('name')} />
         {errors.name && (
           <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
         )}
       </div>
 
       {/* Data de Vencimento */}
-      <div>
-        <Label
-          htmlFor="expiresAt"
-          className="flex items-center gap-2 text-sm font-medium text-zinc-300 mb-2"
-        >
-          <FiCalendar className="w-4 h-4" />
-          Data de Vencimento
-        </Label>
-        <input
-          id="expiresAt"
-          type="date"
-          {...register('expiresAt')}
-          className="w-full bg-zinc-950 border border-zinc-600 text-zinc-100 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition appearance-none cursor-pointer"
-        />
-        {errors.expiresAt && (
-          <p className="text-red-500 text-xs mt-1">
-            {errors.expiresAt.message}
-          </p>
-        )}
-      </div>
+      <DatePickerField<ProductFormInput>
+        control={control}
+        name="expiresAt"
+        label="Data de Vencimento"
+        error={errors.expiresAt?.message}
+      />
 
       {/* Quantidade */}
       <div>
         <Label
           htmlFor="quantity"
-          className="flex items-center gap-2 text-sm font-medium text-zinc-300 mb-2"
+          className="flex items-center gap-2 mb-2 text-sm font-medium text-zinc-300"
         >
           <FiHash className="w-4 h-4" />
           Quantidade
         </Label>
-        <input
+        <Input
           id="quantity"
-          type="number"
+          type="text"
+          inputMode="numeric"
+          pattern="[0-9]*"
           {...register('quantity')}
-          className="w-full bg-zinc-950 border border-zinc-600 text-zinc-100 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
+          placeholder="Digite a quantidade"
         />
+
         {errors.quantity && (
           <p className="text-red-500 text-xs mt-1">{errors.quantity.message}</p>
         )}
@@ -121,24 +111,20 @@ export const ProductForm = () => {
       <div>
         <Label
           htmlFor="category"
-          className="flex items-center gap-2 text-sm font-medium text-zinc-300 mb-2"
+          className="flex items-center gap-2 mb-2 text-sm font-medium text-zinc-300"
         >
           <FiTag className="w-4 h-4" />
           Categoria
         </Label>
-        <input
-          id="category"
-          {...register('category')}
-          className="w-full bg-zinc-950 border border-zinc-600 text-zinc-100 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
-        />
+        <Input id="category" {...register('category')} />
       </div>
 
-      {/* Botões responsivos */}
+      {/* Botões */}
       <div className="flex flex-col sm:flex-row gap-2 pt-6">
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 text-sm transition-colors hover:opacity-90 cursor-pointer"
+          className="w-full sm:w-auto flex items-center justify-center gap-2"
         >
           <FiSend className="w-4 h-4" />
           {isSubmitting ? 'Cadastrando...' : 'Cadastrar Produto'}
@@ -148,7 +134,7 @@ export const ProductForm = () => {
           <Button
             variant="outline"
             type="button"
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 text-sm transition-colors hover:opacity-90 cursor-pointer"
+            className="w-full sm:w-auto flex items-center justify-center gap-2"
           >
             <FiClipboard className="w-4 h-4" />
             Ver todos os produtos

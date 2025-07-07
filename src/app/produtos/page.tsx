@@ -1,12 +1,14 @@
 'use client'
 
+import { parse } from 'date-fns'
 import Link from 'next/link'
-import { useCallback, useEffect, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 
 import { ProductCard } from '@/components/Product/ProductCard'
 import { Button } from '@/components/ui/Button'
 import { toastConfirm } from '@/lib/toastConfirm'
+import { maskUtils } from '@/lib/utils/maskUtils'
 
 import { FiBox, FiCalendar, FiClock, FiPlus, FiSearch } from 'react-icons/fi'
 
@@ -15,13 +17,15 @@ type Product = {
   name: string
   expiresAt: string
   category?: string | null
+  status?: 'ATIVO' | 'VENCIDO' | 'REMOVIDO'
+  removalReason?: string | null
 }
 
 export default function ProdutosPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [total, setTotal] = useState(0)
   const [search, setSearch] = useState('')
-  const [minDate, setMinDate] = useState('')
+  const [minDateInput, setMinDateInput] = useState('')
   const [page, setPage] = useState(1)
   const limit = 6
 
@@ -33,7 +37,16 @@ export default function ProdutosPage() {
     try {
       const params = new URLSearchParams()
       if (search) params.set('name', search)
-      if (minDate) params.set('minDate', minDate)
+
+      if (minDateInput) {
+        const [d, m, y] = minDateInput.split('/')
+        if (d && m && y) {
+          const parsed = parse(`${y}-${m}-${d}`, 'yyyy-MM-dd', new Date())
+          const iso = parsed.toISOString().split('T')[0]
+          params.set('minDate', iso)
+        }
+      }
+
       params.set('page', page.toString())
       params.set('limit', limit.toString())
 
@@ -45,14 +58,14 @@ export default function ProdutosPage() {
     } catch {
       toast.error('Erro ao carregar produtos!')
     }
-  }, [search, minDate, page, limit])
+  }, [search, minDateInput, page])
 
   useEffect(() => {
     fetchProducts()
   }, [fetchProducts])
 
   useEffect(() => {
-    if (products.length > 0 && vencemHoje.length > 0) {
+    if (products.length && vencemHoje.length) {
       toast(
         `${vencemHoje.length} produto${
           vencemHoje.length > 1 ? 's' : ''
@@ -67,16 +80,22 @@ export default function ProdutosPage() {
         },
       )
     }
-  }, [products, vencemHoje.length])
+  }, [products])
+
+  const handleMinDateChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setPage(1)
+    setMinDateInput(maskUtils.dateBR(e.target.value))
+  }
 
   const handleDelete = async (id: string) => {
     toastConfirm({
       message: 'Deseja realmente deletar este produto?',
       onConfirm: async () => {
         try {
-          const res = await fetch(`/api/products/${id}`, { method: 'DELETE' })
+          const res = await fetch(`/api/products/${id}`, {
+            method: 'DELETE',
+          })
           if (!res.ok) throw new Error()
-
           toast.success('Produto removido com sucesso!')
           fetchProducts()
         } catch (erro) {
@@ -106,37 +125,36 @@ export default function ProdutosPage() {
         </Link>
       </div>
 
+      {/* Filtros */}
       <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="flex items-center gap-2 text-sm font-medium text-zinc-300 mb-2">
             <FiSearch className="w-4 h-4" />
             Buscar por nome
           </label>
-
           <input
             type="text"
             placeholder="Ex: Café, Leite..."
             value={search}
             onChange={(e) => {
-              setPage(1)
               setSearch(e.target.value)
+              setPage(1)
             }}
             className="w-full bg-zinc-950 border border-zinc-700 text-zinc-100 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
           />
         </div>
+
         <div>
           <label className="flex items-center gap-2 text-sm font-medium text-zinc-300 mb-2">
             <FiCalendar className="w-4 h-4" />
             Validade a partir de
           </label>
           <input
-            type="date"
-            value={minDate}
-            onChange={(e) => {
-              setPage(1)
-              setMinDate(e.target.value)
-            }}
-            className="w-full bg-zinc-950 border border-zinc-700 text-zinc-100 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition appearance-none cursor-pointer"
+            type="text"
+            placeholder="dd/mm/aaaa"
+            value={minDateInput}
+            onChange={handleMinDateChange}
+            className="w-full appearance-none bg-zinc-950 border border-zinc-700 text-zinc-100 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition cursor-text"
           />
         </div>
       </section>
@@ -144,11 +162,12 @@ export default function ProdutosPage() {
       {vencemHoje.length > 0 && (
         <div className="bg-yellow-400/10 border border-yellow-500 text-yellow-300 px-4 py-3 rounded text-sm font-medium flex items-center gap-2">
           <FiClock className="w-4 h-4" />
-          {vencemHoje.length} produto
-          {vencemHoje.length > 1 ? 's' : ''} vence hoje!
+          {vencemHoje.length} produto{vencemHoje.length > 1 ? 's' : ''} vence
+          hoje!
         </div>
       )}
 
+      {/* Cards */}
       <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {products.length > 0 ? (
           products.map((p) => (
@@ -158,6 +177,8 @@ export default function ProdutosPage() {
               name={p.name}
               expiresAt={p.expiresAt}
               category={p.category ?? undefined}
+              status={p.status}
+              removalReason={p.removalReason}
               onDelete={handleDelete}
               onEdit={handleEdit}
             />
@@ -169,6 +190,7 @@ export default function ProdutosPage() {
         )}
       </section>
 
+      {/* Paginação */}
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-4">
           <Button

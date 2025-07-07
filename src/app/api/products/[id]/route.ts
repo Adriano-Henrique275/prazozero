@@ -1,16 +1,21 @@
+import { adaptDateOutput } from '@/lib/date/adapters'
 import { prisma } from '@/lib/prisma'
-import { productSchema } from '@/lib/validators/product'
+import { productUpdateSchema } from '@/lib/validators/productUpdate'
 import { Prisma } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 
-// 📦 Buscar produto por ID
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function GET(req: NextRequest, context: any) {
-  const id = context?.params?.id
+// 🧾 GET /api/products/[id]
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: { id: string } },
+) {
+  if (!params?.id) {
+    return NextResponse.json({ error: 'ID inválido.' }, { status: 400 })
+  }
 
   try {
     const produto = await prisma.product.findUnique({
-      where: { id },
+      where: { id: params.id },
     })
 
     if (!produto) {
@@ -20,7 +25,10 @@ export async function GET(req: NextRequest, context: any) {
       )
     }
 
-    return NextResponse.json(produto)
+    return NextResponse.json({
+      ...produto,
+      expiresAt: adaptDateOutput(produto.expiresAt),
+    })
   } catch (error) {
     console.error('Erro ao buscar produto:', error)
     return NextResponse.json(
@@ -30,21 +38,28 @@ export async function GET(req: NextRequest, context: any) {
   }
 }
 
-// 🔄 Atualizar produto por ID
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function PUT(request: NextRequest, context: any) {
-  const id = context?.params?.id
+// ✏️ PUT /api/products/[id]
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { id: string } },
+) {
+  if (!params?.id) {
+    return NextResponse.json({ error: 'ID inválido.' }, { status: 400 })
+  }
 
   try {
-    const body = await request.json()
-    const data = productSchema.partial().parse(body)
+    const body = await req.json()
+    const data = productUpdateSchema.parse(body)
 
-    const updatedProduct = await prisma.product.update({
-      where: { id },
+    const updated = await prisma.product.update({
+      where: { id: params.id },
       data,
     })
 
-    return NextResponse.json(updatedProduct)
+    return NextResponse.json({
+      ...updated,
+      expiresAt: adaptDateOutput(updated.expiresAt),
+    })
   } catch (error) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -64,20 +79,32 @@ export async function PUT(request: NextRequest, context: any) {
   }
 }
 
-// ❌ Deletar produto por ID
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function DELETE(_request: NextRequest, context: any) {
-  const id = context?.params?.id
+// 🗑️ DELETE /api/products/[id]
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: { id: string } },
+) {
+  if (!params?.id) {
+    return NextResponse.json({ error: 'ID inválido.' }, { status: 400 })
+  }
 
   try {
-    await prisma.product.delete({
-      where: { id },
+    const removed = await prisma.product.update({
+      where: { id: params.id },
+      data: {
+        status: 'REMOVIDO',
+        removedAt: new Date(),
+        removalReason: 'Removido manualmente pela API',
+      },
     })
 
-    return NextResponse.json(
-      { message: 'Produto removido com sucesso!' },
-      { status: 200 },
-    )
+    return NextResponse.json({
+      message: 'Produto marcado como REMOVIDO com sucesso.',
+      produto: {
+        ...removed,
+        expiresAt: adaptDateOutput(removed.expiresAt),
+      },
+    })
   } catch (error) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -89,9 +116,9 @@ export async function DELETE(_request: NextRequest, context: any) {
       )
     }
 
-    console.error('Erro ao deletar produto:', error)
+    console.error('Erro ao remover produto:', error)
     return NextResponse.json(
-      { error: 'Erro interno ao deletar produto.' },
+      { error: 'Erro interno ao remover produto.' },
       { status: 500 },
     )
   }
