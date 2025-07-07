@@ -1,3 +1,4 @@
+import { ServiceWorkerRegister } from '@/components/ServiceWorkerRegister'
 import type { Metadata } from 'next'
 import { Roboto } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
@@ -14,6 +15,11 @@ const roboto = Roboto({
 export const metadata: Metadata = {
   title: 'PrazoZero',
   description: 'Controle de validade sem estresse',
+  manifest: '/manifest.json',
+}
+
+export const viewport = {
+  themeColor: '#2563eb',
 }
 
 export default function RootLayout({
@@ -26,6 +32,7 @@ export default function RootLayout({
       <body
         className={`${roboto.variable} font-sans bg-zinc-950 text-zinc-100 antialiased min-h-screen`}
       >
+        <ServiceWorkerRegister />
         <OneSignalProvider />
 
         <Toaster

@@ -1,24 +1,22 @@
 'use client'
 
+import { FiEdit, FiHash, FiPackage, FiTag, FiX } from 'react-icons/fi'
+
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, type SubmitHandler } from 'react-hook-form'
 import toast from 'react-hot-toast'
+import { z } from 'zod'
 
 import { Button } from '@/components/ui/Button'
+import { DatePickerField } from '@/components/ui/DatePickerField'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
-import { ProductInput, productSchema } from '@/lib/validators/product'
 
-import {
-  FiCalendar,
-  FiEdit,
-  FiHash,
-  FiPackage,
-  FiTag,
-  FiX,
-} from 'react-icons/fi'
+import { productUpdateSchema } from '@/lib/validators/productUpdate'
+
+type ProductUpdateFormInput = z.input<typeof productUpdateSchema>
 
 export default function EditarProdutoPage() {
   const { id } = useParams<{ id: string }>()
@@ -29,9 +27,10 @@ export default function EditarProdutoPage() {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors, isSubmitting },
-  } = useForm<ProductInput>({
-    resolver: zodResolver(productSchema),
+  } = useForm<ProductUpdateFormInput>({
+    resolver: zodResolver(productUpdateSchema),
   })
 
   useEffect(() => {
@@ -41,10 +40,15 @@ export default function EditarProdutoPage() {
         if (!res.ok) throw new Error()
 
         const produto = await res.json()
-        reset(produto)
+
+        reset({
+          ...produto,
+          expiresAt: new Date(produto.expiresAt),
+        })
+
         setLoading(false)
       } catch (err) {
-        console.error('Erro ao atualizar produto:', err)
+        console.error('Erro ao carregar produto:', err)
         toast.error('Erro ao carregar produto')
         router.push('/produtos')
       }
@@ -53,7 +57,7 @@ export default function EditarProdutoPage() {
     fetchProduto()
   }, [id, reset, router])
 
-  const onSubmit = async (data: ProductInput) => {
+  const onSubmit: SubmitHandler<ProductUpdateFormInput> = async (data) => {
     try {
       const res = await fetch(`/api/products/${id}`, {
         method: 'PUT',
@@ -64,16 +68,16 @@ export default function EditarProdutoPage() {
       if (!res.ok) throw new Error()
 
       toast.success('Produto atualizado com sucesso!')
-      setTimeout(() => {
-        router.push('/')
-      }, 1200)
+      setTimeout(() => router.push('/'), 1200)
     } catch (err) {
+      console.error('Erro ao atualizar produto:', err)
       toast.error('Erro ao atualizar produto')
-      console.error(err)
     }
   }
 
-  if (loading) return <p className="text-zinc-300">Carregando produto...</p>
+  if (loading) {
+    return <p className="text-zinc-300">Carregando produto...</p>
+  }
 
   return (
     <main className="max-w-md mx-auto p-6 space-y-6">
@@ -94,23 +98,27 @@ export default function EditarProdutoPage() {
           )}
         </div>
 
-        <div>
-          <Label htmlFor="expiresAt" className="flex items-center gap-1">
-            <FiCalendar className="w-4 h-4" />
-            Data de Vencimento
-          </Label>
-          <Input id="expiresAt" type="date" {...register('expiresAt')} />
-          {errors.expiresAt && (
-            <p className="text-red-500 text-xs">{errors.expiresAt.message}</p>
-          )}
-        </div>
+        <DatePickerField<ProductUpdateFormInput>
+          control={control}
+          name="expiresAt"
+          label="Data de Vencimento"
+          error={errors.expiresAt?.message}
+        />
 
         <div>
           <Label htmlFor="quantity" className="flex items-center gap-1">
             <FiHash className="w-4 h-4" />
             Quantidade
           </Label>
-          <Input id="quantity" type="number" {...register('quantity')} />
+          <Input
+            id="quantity"
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            {...register('quantity')}
+            placeholder="Digite a quantidade"
+          />
+
           {errors.quantity && (
             <p className="text-red-500 text-xs">{errors.quantity.message}</p>
           )}
@@ -125,19 +133,14 @@ export default function EditarProdutoPage() {
         </div>
 
         <div className="flex justify-between gap-4 mt-6">
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="transition-colors hover:opacity-90 cursor-pointer"
-          >
+          <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Salvando...' : 'Salvar Alterações'}
           </Button>
-
           <Button
             type="button"
             variant="secondary"
             onClick={() => router.push('/')}
-            className="flex items-center gap-1 transition-colors hover:opacity-90 cursor-pointer"
+            className="flex items-center gap-1"
           >
             <FiX className="w-4 h-4" />
             Cancelar

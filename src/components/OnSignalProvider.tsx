@@ -5,8 +5,15 @@ import OneSignal from 'react-onesignal'
 
 export function OneSignalProvider() {
   useEffect(() => {
+    const appId = process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID
+
+    if (!appId) {
+      console.error('❌ App ID do OneSignal não está definido.')
+      return
+    }
+
     OneSignal.init({
-      appId: 'SEU_APP_ID_DO_ONESIGNAL',
+      appId,
       notifyButton: {
         enable: true,
         prenotify: true,
