@@ -80,7 +80,7 @@ export default function ProdutosPage() {
         },
       )
     }
-  }, [products])
+  }, [products, vencemHoje.length])
 
   const handleMinDateChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPage(1)
